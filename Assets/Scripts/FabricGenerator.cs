@@ -21,7 +21,29 @@ public class FabricGenerator : MonoBehaviour
         Rectangle
       
     }
-
+    public void changeWidth(string W)
+    {
+        if(W == "")
+        {
+            width = 1;
+        }
+        else
+        {
+            width = int.Parse(W);
+        }
+        
+    }
+    public void changeHeight(string H)
+    {
+        if (H == "")
+        {
+            height = 1;
+        }
+        else
+        {
+            height = int.Parse(H);
+        }
+    }
     public void GenerateFactory()
     {
         // Clear previous tiles
