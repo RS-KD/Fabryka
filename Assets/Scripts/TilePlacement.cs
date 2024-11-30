@@ -7,31 +7,34 @@ public class TilePlacement : MonoBehaviour
 {
     public GameObject objectToPlace; // Prefab obiektu do umieszczenia
     public float gridSize = 1f; // Wielkość pojedynczego kafelka na tilemapie
+    private List<GameObject> tiles = new();
 
-    void Update()
+    public void DestroyAllObejcts()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
+        foreach(var t in tiles)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray, out RaycastHit hit))
+            Destroy(t);
+        }
+        tiles.Clear();
+    }
+
+    public void DestroyObject()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if(Physics.Raycast(ray, out RaycastHit hit))
+        {
+            Collider[] colliders = Physics.OverlapSphere(hit.point, 0.1f);
+            foreach (var collider in colliders)
             {
-                Collider[] colliders = Physics.OverlapSphere(hit.point, 0.1f);
-                foreach (var collider in colliders)
+                if (collider.gameObject.CompareTag("PlacedObject"))
                 {
-                    if (collider.gameObject.CompareTag("PlacedObject"))
-                    {
-                        Destroy(collider.gameObject);
-                    }
+                    Destroy(collider.gameObject);
                 }
             }
         }
-        else if (Input.GetMouseButtonDown(0)) // Lewy przycisk myszy
-        {
-            PlaceObject();
-        }
     }
 
-    void PlaceObject()
+    public void PlaceObject()
     {
         // Rzutuj promień z kamery w miejsce kliknięcia myszą
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -54,7 +57,7 @@ public class TilePlacement : MonoBehaviour
                 return;
             }
             // Umieść obiekt na tej pozycji
-            Instantiate(objectToPlace, gridPosition, Quaternion.identity);
+            tiles.Add(Instantiate(objectToPlace, gridPosition, Quaternion.identity));
         }
     }
     bool IsPositionOccupied(Vector3 position)
