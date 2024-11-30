@@ -81,6 +81,7 @@ public class PlacementController : MonoBehaviour
         }
         pathListDropdown.captionText.text = " ";
         pathListDropdown.ClearOptions();
+        pathCount = 0;
         paths.Clear();
     }
 }

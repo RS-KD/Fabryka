@@ -9,13 +9,33 @@ public class CameraController : MonoBehaviour
 
     private float pitch = 0f; // Kąt pochylenia kamery (góra-dół)
     private float yaw = 0f; // Kąt obrotu kamery (lewo-prawo)
-
+    [SerializeField]
+    public LayerMask placementLayermask;
+    public Vector3 lastPosition;
     void Update()
     {
         HandleMovement();
         HandleRotation();
     }
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+    }
 
+    public Vector3 GetSelectedMapPosition()
+    {
+        Vector3 mousePos = Input.mousePosition;
+       
+        mousePos.z = Camera.main.nearClipPlane;
+        Ray ray = Camera.main.ScreenPointToRay(mousePos);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 100, placementLayermask))
+        {
+            lastPosition = hit.collider.bounds.center;
+        }
+       
+        return lastPosition;
+    }
     void HandleMovement()
     {
         // Pobierz wejścia od użytkownika

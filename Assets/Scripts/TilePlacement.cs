@@ -1,13 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using TMPro.Examples;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static FabricGenerator;
 
 public class TilePlacement : MonoBehaviour
 {
-    public GameObject objectToPlace; // Prefab obiektu do umieszczenia
+    public GameObject []objectsToPlace; // Prefab obiektu do umieszczenia
+    public GameObject cellindicator;
+    public PlacableType ObjectyShape = PlacableType.Cube; // Shape selection
+    public CameraController CamCont;
+    public Grid grid;
     public float gridSize = 1f; // Wielkość pojedynczego kafelka na tilemapie
-    private List<GameObject> tiles = new();
+
+    public List<GameObject> tiles = new();
 
     public void DestroyAllObejcts()
     {
@@ -16,6 +25,23 @@ public class TilePlacement : MonoBehaviour
             Destroy(t);
         }
         tiles.Clear();
+
+    }
+    public enum PlacableType
+    {
+        Cube,
+        B_Cube,
+        Rectangle,
+
+    }
+    public void changeTypeObject(Int32 obj)
+    {        
+       ObjectyShape = (PlacableType)obj;
+    } 
+    void Update()
+    {
+        IndicatorMove();
+       
     }
 
     public void DestroyObject()
@@ -28,10 +54,20 @@ public class TilePlacement : MonoBehaviour
             {
                 if (collider.gameObject.CompareTag("PlacedObject"))
                 {
+                    tiles.Remove(collider.gameObject);
                     Destroy(collider.gameObject);
+                    
                 }
             }
         }
+    }
+    private void IndicatorMove()
+    {
+        Vector3 mousePos = CamCont.GetSelectedMapPosition();
+
+        Vector3Int gridPos = grid.WorldToCell(mousePos);
+
+        cellindicator.transform.localPosition = grid.CellToWorld(gridPos) + new Vector3(0f, 0.51f, 0f);
     }
 
     public void PlaceObject()
@@ -42,13 +78,24 @@ public class TilePlacement : MonoBehaviour
         {
             if(hit.collider.CompareTag("PlacedObject") || hit.collider.CompareTag("Wall"))
                 return;
-            // Znajdź punkt na tilemapie
+                 /* (ObjectyShape)
+                 {
+                     case PlacableType.Cube:
+                         break;
+                     case PlacableType.B_Cube:
+                         break;
+                     case PlacableType.Rectangle:
+                         break;
+                     default:
+                         break;
+                 }*/
+                // Znajdź punkt na tilemapie
             Vector3 hitPoint = hit.point;
 
             // Zaokrąglij współrzędne do najbliższego kafelka
             Vector3 gridPosition = new Vector3(
                 Mathf.Round(hitPoint.x / gridSize) * gridSize,
-                Mathf.Round(hitPoint.y / gridSize) * gridSize + 1f,
+                Mathf.Round(hitPoint.y / gridSize) * gridSize,
                 Mathf.Round(hitPoint.z / gridSize) * gridSize
             );
             if (IsPositionOccupied(gridPosition))
@@ -56,10 +103,69 @@ public class TilePlacement : MonoBehaviour
                 Debug.Log("Obiekt już istnieje na tym kafelku.");
                 return;
             }
-            // Umieść obiekt na tej pozycji
-            tiles.Add(Instantiate(objectToPlace, gridPosition, Quaternion.identity));
+            // Select and place the object based on its type
+            GameObject prefabToPlace = null;
+            Vector3 offset = Vector3.zero;
+
+            switch (ObjectyShape)
+            {
+                case PlacableType.Cube:
+                    prefabToPlace = objectsToPlace[0];
+                    offset = Vector3.zero; // No offset for a 1x1 cube
+                    break;
+
+                case PlacableType.B_Cube:
+                    prefabToPlace = objectsToPlace[1];
+                    offset = new Vector3(gridSize / 2, 0, gridSize / 2); // Align to 2x2 grid
+                    break;
+
+                case PlacableType.Rectangle:
+                    prefabToPlace = objectsToPlace[2];
+                    offset = new Vector3(0, 0, gridSize / 2); // Align to 2x1 grid
+                    break;
+
+                default:
+                    Debug.LogError("Invalid PlacableType selected!");
+                    return;
+            }
+
+            Vector3 placementPosition = gridPosition + offset;
+
+            if (IsAreaFree(placementPosition, ObjectyShape))
+            {
+                Debug.Log("Nie można umieścić obiektu. Obszar jest zajęty.");
+                return;
+            }
+
+            // Instantiate the object
+            tiles.Add(Instantiate(prefabToPlace, placementPosition, Quaternion.identity));
+
         }
+
     }
+    bool IsAreaFree(Vector3 position, PlacableType type)
+    {
+        Vector3 checkSize = Vector3.one * gridSize; // Default size for Cube
+        
+        if (type == PlacableType.B_Cube)
+            checkSize = new Vector3(gridSize * 2, 0, gridSize * 2); // 2x2 size
+
+        if (type == PlacableType.Rectangle)
+            checkSize = new Vector3(gridSize, 0, gridSize * 2); // 2x1 size
+        
+        Collider[] colliders = Physics.OverlapBox(position, checkSize / 4, Quaternion.identity);
+
+        foreach (Collider collider in colliders)
+        {
+            Debug.Log(collider.name);
+            if (collider.CompareTag("PlacedObject"))
+            {
+                return true; // Znaleziono obiekt z odpowiednim tagiem
+            }
+        }
+        return false;
+    }
+   
     bool IsPositionOccupied(Vector3 position)
     {
         // Użyj OverlapSphere, aby znaleźć obiekty w pobliżu pozycji

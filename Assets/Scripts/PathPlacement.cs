@@ -27,7 +27,7 @@ public class PathPlacement : MonoBehaviour
             // Zaokrąglij współrzędne do najbliższego kafelka
             Vector3 gridPosition = new Vector3(
                 Mathf.Round(hitPoint.x / gridSize) * gridSize,
-                Mathf.Round(hitPoint.y / gridSize) * gridSize + 1f,
+                Mathf.Round(hitPoint.y / gridSize) * gridSize ,
                 Mathf.Round(hitPoint.z / gridSize) * gridSize
             );
             if (IsPositionOccupied(gridPosition))
@@ -63,7 +63,7 @@ public class PathPlacement : MonoBehaviour
             Vector3 hitPoint = hit.point;
             Vector3 gridPosition = new Vector3(
                 Mathf.Round(hitPoint.x / gridSize) * gridSize,
-                Mathf.Round(hitPoint.y / gridSize) * gridSize + 1f,
+                Mathf.Round(hitPoint.y / gridSize) * gridSize,
                 Mathf.Round(hitPoint.z / gridSize) * gridSize
             );
             if (IsPositionOccupied(gridPosition))

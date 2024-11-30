@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - PlacedObject
   - Wall
+  - PlacedObject
   - PathPole
   layers:
   - Default
@@ -14,7 +14,7 @@ TagManager:
   - IgnorePathRaycast
   - Water
   - UI
-  - 
+  - Floor
   - 
   - 
   - 
