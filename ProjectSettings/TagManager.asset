@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlacedObject
   - Wall
+  - PathPole
   layers:
   - Default
   - TransparentFX
