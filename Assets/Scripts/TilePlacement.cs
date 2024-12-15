@@ -6,7 +6,13 @@ using TMPro.Examples;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static FabricGenerator;
+public enum PlacableType
+{
+    Cube,
+    B_Cube,
+    Rectangle,
 
+}
 public class TilePlacement : MonoBehaviour
 {
     public GameObject []objectsToPlace; // Prefab obiektu do umieszczenia
@@ -27,13 +33,7 @@ public class TilePlacement : MonoBehaviour
         tiles.Clear();
 
     }
-    public enum PlacableType
-    {
-        Cube,
-        B_Cube,
-        Rectangle,
 
-    }
     public void changeTypeObject(Int32 obj)
     {        
        ObjectyShape = (PlacableType)obj;
@@ -131,19 +131,19 @@ public class TilePlacement : MonoBehaviour
 
             Vector3 placementPosition = gridPosition + offset;
 
-            if (IsAreaFree(placementPosition, ObjectyShape))
+            if (IsAreaOccupied(placementPosition, ObjectyShape))
             {
                 Debug.Log("Nie można umieścić obiektu. Obszar jest zajęty.");
                 return;
             }
-
+            Debug.LogError(placementPosition);
             // Instantiate the object
             tiles.Add(Instantiate(prefabToPlace, placementPosition, Quaternion.identity));
 
         }
 
     }
-    bool IsAreaFree(Vector3 position, PlacableType type)
+    public bool IsAreaOccupied(Vector3 position, PlacableType type, float sizeMod = 1f)
     {
         Vector3 checkSize = Vector3.one * gridSize; // Default size for Cube
         
@@ -153,20 +153,20 @@ public class TilePlacement : MonoBehaviour
         if (type == PlacableType.Rectangle)
             checkSize = new Vector3(gridSize, 0, gridSize * 2); // 2x1 size
         
-        Collider[] colliders = Physics.OverlapBox(position, checkSize / 4, Quaternion.identity);
+        Collider[] colliders = Physics.OverlapBox(position, new Vector3(checkSize.x + sizeMod, checkSize.y, checkSize.z + sizeMod) / 4 , Quaternion.identity);
 
         foreach (Collider collider in colliders)
         {
-            Debug.Log(collider.name);
             if (collider.CompareTag("PlacedObject"))
             {
+                Debug.Log(collider.name);
                 return true; // Znaleziono obiekt z odpowiednim tagiem
             }
         }
         return false;
     }
    
-    bool IsPositionOccupied(Vector3 position)
+    public bool IsPositionOccupied(Vector3 position)
     {
         // Użyj OverlapSphere, aby znaleźć obiekty w pobliżu pozycji
         Collider[] colliders = Physics.OverlapSphere(position, 0.1f);
@@ -174,6 +174,7 @@ public class TilePlacement : MonoBehaviour
         {
             if (collider.CompareTag("PlacedObject"))
             {
+                Debug.Log(collider.name);
                 return true; // Znaleziono obiekt z odpowiednim tagiem
             }
         }
