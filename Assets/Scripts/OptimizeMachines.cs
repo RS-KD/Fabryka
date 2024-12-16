@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ public class OptimizeMachines : MonoBehaviour
     [SerializeField] private GameObject oneXOne;
     [SerializeField] private GameObject oneXTwo;
     [SerializeField] private GameObject twoXTwo;
+
+    [SerializeField] TMP_Dropdown numberDropdown;
 
     private IEnumerator Opt()
     {
@@ -38,21 +41,36 @@ public class OptimizeMachines : MonoBehaviour
                     offset = new Vector3(gridSize / 2, 0, gridSize / 2); // Align to 2x2 grid
                     break;
             }
-            Debug.LogWarning(newMachinePrefab);
             newMachinesList.Add((newMachinePrefab, placableType, offset));
             Destroy(machine);
         }
         tilePlacement.DestroyAllObejcts();
         machines.Clear();
 
-        Debug.LogError(tilePlacement.tiles.Count);
         yield return new WaitForFixedUpdate();
         foreach(var machineTuple in newMachinesList)
         {
             foreach(var tile in floor)
             {
                 var newPos = new Vector3(tile.transform.position.x, tile.transform.position.y + 1, tile.transform.position.z) + machineTuple.Item3;
-                if(!tilePlacement.IsPositionOccupied(newPos) && !tilePlacement.IsAreaOccupied(newPos, machineTuple.Item2, 16f))
+                float gridSpaceBetween = 4f;
+                switch(numberDropdown.value)
+                {
+                    case 0:
+                        gridSpaceBetween = 4f;
+                        break;
+                    case 1:
+                        gridSpaceBetween = 8f;
+                        break;
+                    case 2:
+                        gridSpaceBetween = 12f;
+                        break;
+                    case 3:
+                        gridSpaceBetween = 16f;
+                        break;
+
+                }
+                if(!tilePlacement.IsPositionOccupied(newPos) && !tilePlacement.IsAreaOccupied(newPos, machineTuple.Item2, gridSpaceBetween))
                 {
                     var newMachine = Instantiate(machineTuple.Item1, newPos, Quaternion.identity);
                     tilePlacement.tiles.Add(newMachine);
