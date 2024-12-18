@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PathPlacement : MonoBehaviour
 {
-    [SerializeField] private LineRenderer lineRenderer;
+    [SerializeField] public LineRenderer lineRenderer;
     private List<Vector3> positions = new();
     public float gridSize = 1f;
     [SerializeField] LayerMask ignoreMask;
@@ -41,6 +41,7 @@ public class PathPlacement : MonoBehaviour
             lineRenderer.SetPositions(positions.ToArray());
             poleList.Add(Instantiate(pathPole, gridPosition, Quaternion.identity, transform));
         }
+        
     }
 
     bool IsPositionOccupied(Vector3 position)

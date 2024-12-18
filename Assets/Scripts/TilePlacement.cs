@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using TMPro;
 using TMPro.Examples;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static FabricGenerator;
@@ -19,9 +21,10 @@ public class TilePlacement : MonoBehaviour
     public GameObject cellindicator;
     public PlacableType ObjectyShape = PlacableType.Cube; // Shape selection
     public CameraController CamCont;
+    public List<TextMeshProUGUI> proUGUIs;
     public Grid grid;
     public float gridSize = 1f; // Wielkość pojedynczego kafelka na tilemapie
-
+    public PlacementController PathPlacement;
     public List<GameObject> tiles = new();
 
     public void DestroyAllObejcts()
@@ -136,10 +139,43 @@ public class TilePlacement : MonoBehaviour
                 Debug.Log("Nie można umieścić obiektu. Obszar jest zajęty.");
                 return;
             }
-            Debug.LogError(placementPosition);
+            //Debug.LogError(placementPosition);
             // Instantiate the object
             tiles.Add(Instantiate(prefabToPlace, placementPosition, Quaternion.identity));
-
+            if(ObjectyShape == PlacableType.Cube)
+            {
+                float num = 0.0f;
+                float.TryParse(proUGUIs[0].text.ToString(), out num);
+                proUGUIs[0].text = (num + 433.0f).ToString();
+            }
+            else if(ObjectyShape == PlacableType.B_Cube)
+            {
+                float num = 0.0f;
+                float.TryParse(proUGUIs[1].text.ToString(), out num);
+                proUGUIs[1].text = (num + 433.0f).ToString();
+            }
+            else
+            {
+                float num = 0.0f;
+                float.TryParse(proUGUIs[2].text.ToString(), out num);
+                proUGUIs[2].text = (num + 433.0f).ToString();
+            }
+          
+            float num1 = 0.0f;
+            float num2 = 0.0f;
+            float num3 = 0.0f;
+            float num4 = 0.0f;
+            float.TryParse(proUGUIs[0].text.ToString(), out num1);
+            float.TryParse(proUGUIs[1].text.ToString(), out num2);
+            float.TryParse(proUGUIs[2].text.ToString(), out num3);
+            foreach (var item in PathPlacement.paths)
+            {
+                num4+=TrailRendererExtensions.GetTrailLength(item.GetComponent<LineRenderer>());
+            }
+            num4 = num4 * 23.4f;
+            proUGUIs[3].text = num4.ToString();
+            proUGUIs[4].text = (num1+ num2 + num3+ num4).ToString();
+            
         }
 
     }
@@ -248,4 +284,28 @@ public class TilePlacement : MonoBehaviour
     //     }
     //     return false;
     // }
+}
+public static class TrailRendererExtensions
+{
+    public static float GetTrailLength(this LineRenderer trailRenderer)
+    {
+
+        var points = new Vector3[trailRenderer.positionCount];
+        var count = trailRenderer.GetPositions(points);
+
+        if (count < 2) return 0f;
+
+        var length = 0f;
+
+        var start = points[0];
+
+        for (var i = 1; i < count; i++)
+        {
+            var end = points[i];
+
+            length += Vector3.Distance(start, end);
+            start = end;
+        }
+        return length;
+    }
 }
