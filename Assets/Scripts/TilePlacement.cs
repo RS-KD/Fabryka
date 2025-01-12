@@ -27,6 +27,8 @@ public class TilePlacement : MonoBehaviour
     public PlacementController PathPlacement;
     public List<GameObject> tiles = new();
 
+    public int index = 0;
+
     public void DestroyAllObejcts()
     {
         foreach(var t in tiles)
@@ -141,7 +143,10 @@ public class TilePlacement : MonoBehaviour
             }
             //Debug.LogError(placementPosition);
             // Instantiate the object
-            tiles.Add(Instantiate(prefabToPlace, placementPosition, Quaternion.identity));
+            var obj = Instantiate(prefabToPlace, placementPosition, Quaternion.identity);
+            obj.GetComponent<ObjectIndex>().index = index;
+            index++;
+            tiles.Add(obj);
             if(ObjectyShape == PlacableType.Cube)
             {
                 float num = 0.0f;

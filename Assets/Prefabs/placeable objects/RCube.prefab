@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 4582197438551107912}
   - component: {fileID: 474981293204715203}
   - component: {fileID: -2022316169933332503}
+  - component: {fileID: 3833061430178530499}
+  - component: {fileID: 9001195011452536522}
   m_Layer: 3
   m_Name: RCube
   m_TagString: PlacedObject
@@ -118,3 +120,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b7bd356a356362449d9a508d0afe3e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 0
+--- !u!114 &3833061430178530499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3475337183143241705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e364e01f0b2a7448d7a01af2722a90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  neighbors: []
+--- !u!114 &9001195011452536522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3475337183143241705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2c79ddbbf3871c46b76711b6878a6d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 0

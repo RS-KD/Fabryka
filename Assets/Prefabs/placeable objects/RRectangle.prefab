@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 4582197438551107912}
   - component: {fileID: 474981293204715203}
   - component: {fileID: 3327081735443803918}
+  - component: {fileID: 1069255012549075347}
+  - component: {fileID: 3286974700580340086}
   m_Layer: 0
   m_Name: RRectangle
   m_TagString: PlacedObject
@@ -119,3 +121,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+--- !u!114 &1069255012549075347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3475337183143241705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e364e01f0b2a7448d7a01af2722a90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  neighbors: []
+--- !u!114 &3286974700580340086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3475337183143241705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2c79ddbbf3871c46b76711b6878a6d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 0
