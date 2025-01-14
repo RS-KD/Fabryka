@@ -136,13 +136,11 @@ public class TilePlacement : MonoBehaviour
 
             Vector3 placementPosition = gridPosition + offset;
 
-            if (IsAreaOccupied(placementPosition, ObjectyShape))
+            if (IsAreaOccupied(placementPosition, ObjectyShape, 0.5f))
             {
                 Debug.Log("Nie można umieścić obiektu. Obszar jest zajęty.");
                 return;
             }
-            //Debug.LogError(placementPosition);
-            // Instantiate the object
             var obj = Instantiate(prefabToPlace, placementPosition, Quaternion.identity);
             obj.GetComponent<ObjectIndex>().index = index;
             index++;
