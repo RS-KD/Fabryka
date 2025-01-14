@@ -51,6 +51,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   pathPole: {fileID: 838243135350009917, guid: 553a0a31b8e48c2468f3dfbff1ef87c9, type: 3}
+  tilemap: {fileID: 0}
+  validTile: {fileID: 11400000, guid: 9f084e1f60409c948bfeeaf32501f213, type: 2}
 --- !u!120 &9172604810918471271
 LineRenderer:
   serializedVersion: 2

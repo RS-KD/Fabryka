@@ -3256,6 +3256,7 @@ MonoBehaviour:
   oneXTwo: {fileID: 3475337183143241705, guid: 7442d7a186be5294e826d4e3c9708c19, type: 3}
   twoXTwo: {fileID: 3475337183143241705, guid: f4c83405abb06da45b2c55464873764a, type: 3}
   numberDropdown: {fileID: 1286788530}
+  usedIndexes: 
 --- !u!4 &613012233
 Transform:
   m_ObjectHideFlags: 0
@@ -7719,9 +7720,10 @@ GameObject:
   - component: {fileID: 1557571793}
   - component: {fileID: 1557571795}
   - component: {fileID: 1557571794}
+  - component: {fileID: 1557571796}
   m_Layer: 0
   m_Name: Tilemap
-  m_TagString: Untagged
+  m_TagString: Tilemap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8669,15 +8671,15 @@ Tilemap:
   - m_RefCount: 84
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray:
-  - m_RefCount: 72
+  - m_RefCount: 36
     m_Data: {fileID: 3475337183143241705, guid: 3e0914c0b26c53a4c9900ffc8fc248c3, type: 3}
-  - m_RefCount: 87
+  - m_RefCount: 48
     m_Data: {fileID: 3475337183143241705, guid: 4eca2546651078445961ec9b65e31511, type: 3}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
   m_Size: {x: 10, y: 10, z: 1}
-  m_TileAnchor: {x: 1, y: 1, z: 0}
+  m_TileAnchor: {x: 0, y: 0, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
     e00: 1
@@ -8696,6 +8698,37 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &1557571796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557571792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 2
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.083333336
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: 533ab87eda3de1b4598d79f7f1dd1cbe, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &1581803818
 GameObject:
   m_ObjectHideFlags: 0
@@ -10347,6 +10380,7 @@ MonoBehaviour:
   gridSize: 1
   PathPlacement: {fileID: 1248624826}
   tiles: []
+  index: 0
 --- !u!4 &1798125525
 Transform:
   m_ObjectHideFlags: 0

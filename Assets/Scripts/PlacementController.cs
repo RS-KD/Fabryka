@@ -20,7 +20,17 @@ public class PlacementController : MonoBehaviour
     }
     private void Update() 
     {
-        switch(placementTypeDropdown.value)
+        if (Input.GetKeyDown(KeyCode.O)) // Example key binding
+        {
+            foreach (var item in paths)
+            {
+                PathPlacement path_CUR = item.GetComponent<PathPlacement>();
+                //path_CUR.OptimizePath();
+
+            }
+            
+        }
+        switch (placementTypeDropdown.value)
         {
             case 0:
                 if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
@@ -38,7 +48,7 @@ public class PlacementController : MonoBehaviour
                     if(paths.Count > 0)
                     {
                         pathPlacement = paths[pathListDropdown.value].GetComponent<PathPlacement>();
-                        pathPlacement.DeletePathPosition();
+                       // pathPlacement.DeletePathPosition();
                     }
                 }
                 else if (Input.GetMouseButtonDown(0))
