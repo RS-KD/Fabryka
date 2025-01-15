@@ -3,7 +3,14 @@ guid: f65090734f0f27f4998e540a3d8f095b
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - lineRenderer: {instanceID: 0}
+  - pathPole: {instanceID: 0}
+  - tilemap: {instanceID: 0}
+  - validTile: {instanceID: 0}
+  - navMeshSurface: {instanceID: 0}
+  - tileParent: {instanceID: 0}
+  - pathTilePrefab: {fileID: 5726131012125847635, guid: fc8c4282ed451724bb426e7dc806017b, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

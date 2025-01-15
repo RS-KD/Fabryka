@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 using Unity.AI.Navigation;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
+using UnityEngine.WSA;
 
 
 public class PathPlacement : MonoBehaviour
@@ -14,6 +15,7 @@ public class PathPlacement : MonoBehaviour
     [SerializeField] public LineRenderer lineRenderer;
     private List<Vector3> positions = new();
     private List<GameObject> poleList = new();
+    private List<GameObject> TileList = new ();
     public float gridSize = 1f;
     [SerializeField] private float heightOffset = 1f;
     [SerializeField] LayerMask ignoreMask;
@@ -21,18 +23,19 @@ public class PathPlacement : MonoBehaviour
     [SerializeField] private Tilemap tilemap; // Reference to the tilemap
     [SerializeField] private TileBase validTile; // Tile type that represents valid placement areas
     [SerializeField] private NavMeshSurface navMeshSurface ; // NavMeshSurface in the scene
+    [SerializeField] GameObject pathTilePrefab;
     private NavMeshPath currentPath;
     private List<Vector3> optimizedPoints; // Store the optimized path points
-
+    Color col;
     private void Start()
     {
 
         tilemap = GameObject.FindGameObjectWithTag("Tilemap").GetComponent<Tilemap>();
         navMeshSurface = GameObject.FindGameObjectWithTag("Tilemap").GetComponent<NavMeshSurface>();
         lineRenderer.material = new Material(Shader.Find("Unlit/ProfileAnalyzerShader"));
-        
+
         Gradient gradient = new Gradient();
-        Color col = Random.ColorHSV();
+        col = Random.ColorHSV();
         gradient.SetKeys(
             new GradientColorKey[] { new GradientColorKey(col, 0.0f), new GradientColorKey(col, 1.0f) },
             new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 1.0f), new GradientAlphaKey(1.0f, 1.0f) }
@@ -142,6 +145,7 @@ public class PathPlacement : MonoBehaviour
             Debug.DrawLine(snappedCorners[i], snappedCorners[i + 1], Color.yellow, 200f);
         }
         snappedCorners = Add90DegreeTurns(snappedCorners);
+        PlaceTilesAlongPath(snappedCorners);
         for (int i = 0; i < snappedCorners.Count - 1; i++)
         {
             Debug.DrawLine(snappedCorners[i], snappedCorners[i + 1], Color.blue, 200f);
@@ -153,8 +157,83 @@ public class PathPlacement : MonoBehaviour
         {
             // Instantiate a pole at the corner
             GameObject pole = Instantiate(pathPole, corner, Quaternion.identity, transform);
+            pole.GetComponent<Renderer>().material.color = col;
             poleList.Add(pole);
         }
+    }
+    private void PlaceTilesAlongPath(List<Vector3> path)
+    {
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            Vector3 start = path[i];
+            Vector3 end = path[i + 1];
+            Vector3 direction = (end - start).normalized;
+            // Generate tiles between start and end
+            foreach (Vector3 tilePosition in GetTilePositions(start, end))
+            {
+                Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+                GameObject Tile = Instantiate(pathTilePrefab, tilePosition, rotation, transform);
+                Tile.GetComponent<MeshRenderer>().materials[1].color = col;
+                // Adjust corner tiles
+                if (i > 0 && tilePosition == start)
+                {
+                    // Move the tile coming into the corner back by 80%
+                    Vector3 adjustment = -direction * tilemap.cellSize.x * -0.32f;
+                    Tile.transform.position += adjustment;
+                }
+                if (i < path.Count - 2 && tilePosition == end)
+                {
+                    // Move the tile starting the next segment forward by 20%
+                    Vector3 adjustment = direction * tilemap.cellSize.x * -0.80f;
+                    Tile.transform.position += adjustment;
+                }
+                TileList.Add(Tile);
+            }
+        }
+    }
+
+    private IEnumerable<Vector3> GetTilePositions(Vector3 start, Vector3 end)
+    {
+        List<Vector3> tilePositions = new();
+
+        // Determine the direction of the path segment
+        Vector3 direction = (end - start).normalized;
+
+        // Calculate the number of tiles required
+        float distance = Vector3.Distance(start, end);
+        int numTiles = Mathf.CeilToInt(distance / tilemap.cellSize.x);
+
+        for (int i = 0; i <= numTiles; i++)
+        {
+            Vector3 tilePosition = start + direction * i * tilemap.cellSize.x;
+            tilePositions.Add(new Vector3(
+                Mathf.Round(tilePosition.x),
+                Mathf.Round(tilePosition.y),
+                Mathf.Round(tilePosition.z)
+            ));
+        }
+
+        return tilePositions;
+    }
+
+    private void ClearPreviousPath()
+    {
+        // Clear existing poles
+        foreach (GameObject pole in poleList)
+        {
+            Destroy(pole);
+        }
+        foreach (GameObject child in TileList)
+        {
+            Destroy(child);
+        }
+        poleList.Clear();
+
+        // Clear existing LineRenderer
+        lineRenderer.positionCount = 0;
+
+        // Clear existing tiles
+        
     }
     private List<Vector3> Add90DegreeTurns(List<Vector3> corners)
     {
@@ -245,17 +324,5 @@ public class PathPlacement : MonoBehaviour
         return positions.Contains(position);
     }
     
-    private void ClearPreviousPath()
-    {
-        // Remove existing poles
-        foreach (GameObject pole in poleList)
-        {
-            Destroy(pole);
-        }
-        poleList.Clear();
-        positions.Remove(positions[positions.Count-1]);
-        // Clear the LineRenderer
-        lineRenderer.positionCount = 0;
-    }
-
+    
 }
