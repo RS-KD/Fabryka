@@ -20,12 +20,12 @@ public class PathPlacement : MonoBehaviour
     [SerializeField] private float heightOffset = 1f;
     [SerializeField] LayerMask ignoreMask;
     [SerializeField] GameObject pathPole;
-    [SerializeField] private Tilemap tilemap; // Reference to the tilemap
-    [SerializeField] private TileBase validTile; // Tile type that represents valid placement areas
-    [SerializeField] private NavMeshSurface navMeshSurface ; // NavMeshSurface in the scene
+    [SerializeField] private Tilemap tilemap; 
+    [SerializeField] private TileBase validTile; 
+    [SerializeField] private NavMeshSurface navMeshSurface ;
     [SerializeField] GameObject pathTilePrefab;
     private NavMeshPath currentPath;
-    private List<Vector3> optimizedPoints; // Store the optimized path points
+    private List<Vector3> optimizedPoints; 
     Color col;
     private void Start()
     {
@@ -52,7 +52,6 @@ public class PathPlacement : MonoBehaviour
             if (hit.collider.CompareTag("PathPole") || hit.collider.CompareTag("Wall"))
                 return;
 
-            // Snap to the nearest tile
             Vector3 gridPosition = new Vector3(
                 Mathf.Round(hit.point.x / gridSize) * gridSize,
                 Mathf.Round(hit.point.y / gridSize) * gridSize,
@@ -65,19 +64,17 @@ public class PathPlacement : MonoBehaviour
                 return;
             }
 
-            // Add the position
             positions.Add(gridPosition);
             Debug.Log($"Added position: {gridPosition}");
             lineRenderer.positionCount = positions.Count;
             lineRenderer.SetPositions(positions.ToArray());
 
-            // Instantiate a pole
             poleList.Add(Instantiate(pathPole, gridPosition, Quaternion.identity, transform));
 
-            // Generate the path if there are at least two points
+            
             if (positions.Count > 1)
             {
-                GeneratePath(positions[0], positions[positions.Count-1]); // First to last position
+                GeneratePath(positions[0], positions[positions.Count-1]); 
             }
         }
 
@@ -87,7 +84,7 @@ public class PathPlacement : MonoBehaviour
     {
         navMeshSurface.BuildNavMesh();
 
-        // Ensure start and end points are valid NavMesh positions
+        
         if (NavMesh.SamplePosition(startPoint, out NavMeshHit startHit, 1.0f, NavMesh.AllAreas) &&
             NavMesh.SamplePosition(endPoint, out NavMeshHit endHit, 1.0f, NavMesh.AllAreas))
         {
@@ -116,16 +113,16 @@ public class PathPlacement : MonoBehaviour
 
     private void DrawPath(NavMeshPath navPath)
     {
-        // Clear existing poles and line
+        
         ClearPreviousPath();
 
-        // Update LineRenderer with NavMesh corners
+    
         for (int i = 0; i < navPath.corners.Length - 1; i++)
         {
             Debug.DrawLine(navPath.corners[i], navPath.corners[i + 1], Color.red, 200f);
         }
         List<Vector3> snappedCorners = new();
-        // Place poles at each corner
+       
         foreach (Vector3 corner_B in navPath.corners)
         {
             Debug.Log(corner_B);
@@ -155,7 +152,7 @@ public class PathPlacement : MonoBehaviour
         lineRenderer.SetPositions(snappedCorners.ToArray());
         foreach (Vector3 corner in snappedCorners)
         {
-            // Instantiate a pole at the corner
+            
             GameObject pole = Instantiate(pathPole, corner, Quaternion.identity, transform);
             pole.GetComponent<Renderer>().material.color = col;
             poleList.Add(pole);
@@ -168,22 +165,22 @@ public class PathPlacement : MonoBehaviour
             Vector3 start = path[i];
             Vector3 end = path[i + 1];
             Vector3 direction = (end - start).normalized;
-            // Generate tiles between start and end
+            
             foreach (Vector3 tilePosition in GetTilePositions(start, end))
             {
                 Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
                 GameObject Tile = Instantiate(pathTilePrefab, tilePosition, rotation, transform);
                 Tile.GetComponent<MeshRenderer>().materials[1].color = col;
-                // Adjust corner tiles
+             
                 if (i > 0 && tilePosition == start)
                 {
-                    // Move the tile coming into the corner back by 80%
+                    
                     Vector3 adjustment = -direction * tilemap.cellSize.x * -0.32f;
                     Tile.transform.position += adjustment;
                 }
                 if (i < path.Count - 2 && tilePosition == end)
                 {
-                    // Move the tile starting the next segment forward by 20%
+                   
                     Vector3 adjustment = direction * tilemap.cellSize.x * -0.80f;
                     Tile.transform.position += adjustment;
                 }
@@ -196,10 +193,10 @@ public class PathPlacement : MonoBehaviour
     {
         List<Vector3> tilePositions = new();
 
-        // Determine the direction of the path segment
+        
         Vector3 direction = (end - start).normalized;
 
-        // Calculate the number of tiles required
+       
         float distance = Vector3.Distance(start, end);
         int numTiles = Mathf.CeilToInt(distance / tilemap.cellSize.x);
 
@@ -218,7 +215,7 @@ public class PathPlacement : MonoBehaviour
 
     private void ClearPreviousPath()
     {
-        // Clear existing poles
+       
         foreach (GameObject pole in poleList)
         {
             Destroy(pole);
@@ -229,10 +226,10 @@ public class PathPlacement : MonoBehaviour
         }
         poleList.Clear();
 
-        // Clear existing LineRenderer
+        
         lineRenderer.positionCount = 0;
 
-        // Clear existing tiles
+        
         
     }
     private List<Vector3> Add90DegreeTurns(List<Vector3> corners)
@@ -244,25 +241,25 @@ public class PathPlacement : MonoBehaviour
             Vector3 current = corners[i];
             Vector3 next = corners[i + 1];
 
-            // Always add the current point
+            
             if (i == 0 || IsPointValid(current))
             {
                 adjustedCorners.Add(current);
             }
 
-            // Check if the points are diagonal (different X and Z coordinates)
+            
             if (current.x != next.x && current.z != next.z)
             {
-                // Insert an intermediate point to make a 90° turn
+              
                 Vector3 intermediate = new Vector3(next.x, current.y, current.z);
 
-                // Validate path from current to intermediate
+                
                 if (!IsPathValid(current, intermediate))
                 {
                     intermediate = GenerateValidTurnPoint(current, next);
                 }
 
-                // Add the intermediate point if valid
+                
                 if (IsPointValid(intermediate) && IsPathValid(current, intermediate))
                 {
                     adjustedCorners.Add(intermediate);
@@ -270,7 +267,7 @@ public class PathPlacement : MonoBehaviour
             }
         }
 
-        // Always add the last point
+        
         Vector3 last = corners[^1];
         if (IsPointValid(last))
         {
@@ -285,7 +282,7 @@ public class PathPlacement : MonoBehaviour
         NavMeshPath path = new NavMeshPath();
         if (NavMesh.CalculatePath(start, end, NavMesh.AllAreas, path))
         {
-            // Check if the path is complete and does not intersect cutouts
+            
             return path.status == NavMeshPathStatus.PathComplete;
         }
         return false;
@@ -293,19 +290,19 @@ public class PathPlacement : MonoBehaviour
 
     private bool IsPointValid(Vector3 point)
     {
-        // Check if the point is on the NavMesh
+     
         return NavMesh.SamplePosition(point, out _, 0.5f, NavMesh.AllAreas);
     }
 
     private Vector3 GenerateValidTurnPoint(Vector3 current, Vector3 next)
     {
-        // Try moving away from the invalid area in four directions
+     
         Vector3[] directions =
         {
-        new Vector3(current.x, current.y, next.z), // Turn X, then Z
-        new Vector3(next.x, current.y, current.z), // Turn Z, then X
-        new Vector3(current.x - (next.x - current.x), current.y, current.z), // Opposite X
-        new Vector3(current.x, current.y, current.z - (next.z - current.z))  // Opposite Z
+        new Vector3(current.x, current.y, next.z), 
+        new Vector3(next.x, current.y, current.z), 
+        new Vector3(current.x - (next.x - current.x), current.y, current.z), 
+        new Vector3(current.x, current.y, current.z - (next.z - current.z))  
     };
 
         foreach (Vector3 direction in directions)
@@ -316,7 +313,7 @@ public class PathPlacement : MonoBehaviour
             }
         }
 
-        // Fallback: Return the original point (this should rarely happen)
+    
         return current;
     }
     private bool IsPositionOccupied(Vector3 position)
